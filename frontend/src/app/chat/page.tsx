@@ -3,19 +3,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import ChatWindow from "@/components/Chat/ChatWindow";
-import { api } from "@/lib/api";
-import { Loader2 } from "lucide-react";
 
 export default function ChatMainPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [checkingHistory, setCheckingHistory] = useState(true);
-
   const [isReady, setIsReady] = useState(false);
     
-useEffect(() => {
+  useEffect(() => {
     setIsReady(true);
   }, []);
 
