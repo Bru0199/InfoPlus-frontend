@@ -18,7 +18,7 @@ import {
   SidebarGroupLabel,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
@@ -38,7 +38,6 @@ export default function AppSidebar() {
 
   const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams(); // Added to detect the ?new=true flag
   const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -145,10 +144,7 @@ export default function AppSidebar() {
                   </div>
                 ) : chats.length > 0 ? (
                   chats.map((chat) => {
-                    const isNewChatRoute = searchParams.get("new") === "true";
-                    const isActive =
-                      params?.id === chat.id ||
-                      (isNewChatRoute && chat.title === "New Chat");
+                    const isActive = params?.id === chat.id;
 
                     return (
                       <SidebarMenuItem key={chat.id}>
