@@ -15,13 +15,10 @@ export default function LoginPage() {
       try {
         const res = await api.get("/auth/me");
 
-        // If user is authenticated, store user data and redirect to chat
+        // If user is authenticated, redirect to chat immediately
         if (res.data && res.data.authenticated && res.data.user) {
           setUser(res.data.user);
-          // Redirect to chat after a short delay
-          setTimeout(() => {
-            router.replace("/chat");
-          }, 500);
+          router.replace("/chat");
         } else {
           setIsLoading(false);
         }
@@ -40,6 +37,15 @@ export default function LoginPage() {
       window.location.href = redirectUrl;
     }, 500);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--brand-blue)]"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)] p-4 transition-colors duration-300">
       <div className="w-full max-w-sm space-y-8 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--bg-muted)] p-10 shadow-sm">
