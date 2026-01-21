@@ -26,15 +26,16 @@ export default function Navbar() {
 
   useEffect(() => {
     // Check real auth status from your backend
-    console.log("Navbar: Checking auth...");
     api
       .get("/auth/me")
       .then((res) => {
-        console.log("Navbar: Auth success", res.data);
-        if (res.data && res.data.user) setUser(res.data.user);
+        if (res.data && res.data.authenticated && res.data.user) {
+          setUser(res.data.user);
+        } else {
+          setUser(null);
+        }
       })
       .catch((err) => {
-        console.error("Navbar: Auth failed", err.response?.status);
         setUser(null);
       });
   }, []);

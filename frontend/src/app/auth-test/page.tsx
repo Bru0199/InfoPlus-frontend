@@ -14,10 +14,7 @@ export default function AuthTestPage() {
     setError(null);
     
     try {
-      console.log("Making request to /auth/me");
       const response = await api.get("/auth/me");
-      
-      console.log("Response:", response);
       setStatus("✅ LOGGED IN");
       setUserData(response.data);
     } catch (err: any) {
