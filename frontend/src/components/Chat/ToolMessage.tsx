@@ -15,7 +15,7 @@ export const hasToolResult = (content: any) => {
   }
 };
 
-export const ToolMessage = ({ content }: { content: any }) => {
+export const ToolMessage = React.memo(function ToolMessage({ content }: { content: any }) {
   try {
     const parsed = typeof content === "string" ? JSON.parse(content) : content;
 
@@ -29,8 +29,15 @@ export const ToolMessage = ({ content }: { content: any }) => {
     return (
       <div className="flex flex-col gap-4 mt-2">
         {toolResults.map((item, index) => {
-          const toolData = item.output.value;
-
+          const outputOrResult = item.output ?? item.result;
+          const toolData = outputOrResult?.value ?? outputOrResult;
+          if (toolData === undefined || toolData === null) {
+            return (
+              <p key={index} className="text-sm text-amber-600 dark:text-amber-400">
+                No data returned.
+              </p>
+            );
+          }
           switch (item.toolName) {
             case "getWeather":
               return <WeatherCard key={index} data={toolData} />;
@@ -47,4 +54,4 @@ export const ToolMessage = ({ content }: { content: any }) => {
   } catch (e) {
     return null;
   }
-};
+});

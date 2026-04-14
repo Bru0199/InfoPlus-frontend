@@ -35,7 +35,8 @@ export default function LoginPage() {
   }, [router]);
 
   const handleLogin = (provider: "google" | "github") => {
-    const redirectUrl = `https://info-plus-backend.vercel.app/api/auth/${provider}`;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+    const redirectUrl = baseUrl ? `${baseUrl.replace(/\/$/, "")}/auth/${provider}` : `/api/auth/${provider}`;
     setTimeout(() => {
       window.location.href = redirectUrl;
     }, 500);

@@ -2,43 +2,9 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
 import ChatWindow from "@/components/Chat/ChatWindow";
 
 export default function ChatMainPage() {
-  const [isReady, setIsReady] = useState(false);
-    
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
-
-  if (!isReady) return null;
-
-
-  //   // Check for latest conversation
-  //   api
-  //     .get("/chat/conversations")
-  //     .then((res) => {
-  //       if (Array.isArray(res.data) && res.data.length > 0) {
-  //         // Redirect to the most recent chat
-  //         router.replace(`/chat/${res.data[0].id}`);
-  //       } else {
-  //         setCheckingHistory(false);
-  //       }
-  //     })
-  //     .catch(() => {
-  //       setCheckingHistory(false);
-  //     });
-  // }, [router, searchParams]);
-
-  // if (checkingHistory) {
-  //   return (
-  //     <div className="flex h-full w-full items-center justify-center">
-  //       <Loader2 className="h-8 w-8 animate-spin text-[var(--brand-blue)]" />
-  //     </div>
-  //   );
-  // }
-
   return <ChatWindow />;
 }
 
