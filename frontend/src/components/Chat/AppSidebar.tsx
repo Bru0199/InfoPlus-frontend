@@ -19,7 +19,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useParams, useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 
@@ -42,11 +41,13 @@ export default function AppSidebar() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     api
-      .get("chat/conversations")
+      .get("/chat/conversations")
       .then((res) => {
+        if (cancelled) return;
         if (Array.isArray(res.data)) {
-          const sortedChats = res.data.sort(
+          const sortedChats = [...res.data].sort(
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           );
@@ -54,15 +55,26 @@ export default function AppSidebar() {
         }
       })
       .catch((err) => {
-        console.error("Error fetching conversations:", err);
-        setChats([]);
+        if (!cancelled) {
+          console.error("Error fetching conversations:", err);
+          setChats([]);
+        }
       })
       .finally(() => {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       });
+    return () => {
+      cancelled = true;
+    };
   }, []);
   const handleNewChat = () => {
-    const newId = uuidv4();
+    const newId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+            const r = (Math.random() * 16) | 0;
+            return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+          });
 
     const newEntry: Chat = {
       id: newId,

@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { WeatherCard, StockCard, F1Card } from "./ToolCards";
 
 export const MessageContent = ({ content }: { content: any[] }) => {
-  // Filter: Ignore the "tool-call" type entirely
-  const displayItems = content.filter((item) => item.type !== "tool-call");
+  const displayItems = useMemo(
+    () => (Array.isArray(content) ? content.filter((item: any) => item.type !== "tool-call") : []),
+    [content]
+  );
 
   return (
     <div className="flex flex-col gap-5 w-full">
@@ -17,8 +19,14 @@ export const MessageContent = ({ content }: { content: any[] }) => {
 
         // Handle Tool Results
         if (item.type === "tool-result") {
-          const toolData = item.output.value;
-          
+          const toolData = item.output?.value ?? item.output;
+          if (toolData === undefined || toolData === null) {
+            return (
+              <p key={index} className="text-sm text-amber-600 dark:text-amber-400">
+                No data returned.
+              </p>
+            );
+          }
           switch (item.toolName) {
             case "getWeather":
               return <WeatherCard key={index} data={toolData} />;
@@ -38,16 +46,14 @@ export const MessageContent = ({ content }: { content: any[] }) => {
 
 const StreamingText = ({ text }: { text: string }) => {
   const [displayedText, setDisplayedText] = useState("");
-  
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
       setDisplayedText(text.slice(0, i));
       i++;
       if (i > text.length) clearInterval(interval);
-    }, 10); // Speed of text appearance
+    }, 16);
     return () => clearInterval(interval);
   }, [text]);
-
   return <div className="text-inherit">{displayedText}</div>;
 };

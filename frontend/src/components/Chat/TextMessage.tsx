@@ -60,27 +60,35 @@ export const hasTextType = (content: any) => {
 //   );
 // };
 
-export const TextMessage = ({
+export const TextMessage = React.memo(function TextMessage({
   content,
   isLast,
 }: {
   content: any;
   isLast?: boolean;
-}) => {
+}) {
   const [displayedText, setDisplayedText] = useState("");
 
   const rawText = useMemo(() => {
-    try {
-      const parsed =
-        typeof content === "string" ? JSON.parse(content) : content;
-      if (Array.isArray(parsed)) {
-        const textObj = parsed.find((item: any) => item.type === "text");
-        return textObj ? textObj.text : null;
+    if (content == null) return null;
+    if (typeof content === "string") {
+      if (content.length === 0) return null;
+      try {
+        const parsed = JSON.parse(content);
+        if (Array.isArray(parsed)) {
+          const textObj = parsed.find((item: any) => item.type === "text");
+          return textObj ? textObj.text : null;
+        }
+      } catch {
+        // Plain text from backend
       }
-      return null;
-    } catch {
-      return null;
+      return content;
     }
+    if (typeof content === "object" && Array.isArray(content)) {
+      const textObj = content.find((item: any) => item.type === "text");
+      return textObj ? textObj.text : null;
+    }
+    return null;
   }, [content]);
 
   useEffect(() => {
@@ -92,14 +100,14 @@ export const TextMessage = ({
       return;
     }
 
-    // IF THE LAST MESSAGE (NEW): Type it out
+    // IF THE LAST MESSAGE (NEW): Type it out (16ms ≈ 60fps, fewer re-renders)
     let i = 0;
     setDisplayedText("");
     const interval = setInterval(() => {
       setDisplayedText(rawText.slice(0, i));
       i++;
       if (i > rawText.length) clearInterval(interval);
-    }, 10);
+    }, 16);
 
     return () => clearInterval(interval);
   }, [rawText, isLast]);
@@ -108,4 +116,4 @@ export const TextMessage = ({
   return (
     <div className="leading-relaxed whitespace-pre-wrap">{displayedText}</div>
   );
-};
+});
